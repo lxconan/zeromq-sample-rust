@@ -102,4 +102,4 @@ PS> cargo build
 PS> cargo run
 ```
 
-<img src="./sample.png">
+<img src="sample.png">
