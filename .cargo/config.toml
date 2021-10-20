@@ -1,3 +1,0 @@
-[env]
-LIBZMQ_LIB_DIR = "C:\\Workspace\\libzmq\\build\\lib\\Release"
-LIBZMQ_INCLUDE_DIR = "C:\\Workspace\\libzmq\\include"
