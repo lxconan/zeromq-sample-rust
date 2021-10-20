@@ -8,17 +8,20 @@ All the command prompt we use is *Developer Powershell for VS2019*. You can find
 
 # 2 One-Step Build
 
-Now we can do a one-step build using the `build.ps1` script with configuration specified. E.g.,
+Now we can do a one-step build using the `build.ps1` script with configuration specified. The specification is as follows:
 
-```powershell
-PS> ./build.ps1 -Configuration Release
-```
+|Parameter Name|Description|Possible Value|
+|---|---|---|
+|`-Configuration`|The build configuration of the workspace. Please note that the configuration will apply to both *libzmq* and your rust project. The default value of this arugment is `debug`|`'debug' or 'release'`|
+|`-ForceRebuild`|If present both *libzmq* and your cargo project will be cleaned and rebuild. Otherwise, incremental build cache is used. The default value of this argument is `$false`||
 
-or
+E.g.,
 
-```powershell
-PS> ./build.ps1 -Configuration Debug
-```
+|Command|Description|
+|---|---|
+|`./build.ps1 -Configuration release`|Build the workspace with `release` configuration. Use cache if possible.|
+|`./build.ps1 -Configuration debug`|Build the workspace with `debug` configuration. Use cache if possible.|
+|`./build.ps1 -Configuration release -ForceRebuild`|Build the workspace with `release` configuration. Discard the cache and rebuild the *libzmq* and the rust project.|
 
 # 3 Manually Build
 
