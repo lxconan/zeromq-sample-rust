@@ -3,7 +3,11 @@ param (
     [Parameter(Mandatory=$false)]
     [ValidateSet('debug', 'release')]
     [System.String]
-    $Configuration = 'debug'
+    $Configuration = 'debug',
+
+    [Parameter(Mandatory=$false)]
+    [Switch]
+    $ForceRebuild
 )
 $ErrorActionPreference = 'Stop'
 
@@ -28,11 +32,17 @@ function BuildLibZmq () {
     }
     
     Set-Location $LIBZMQ_BUILD_DIR
-    if (Test-Path "$LIBZMQ_BUILD_DIR\lib\$Configuration") {
-        Remove-Item -Recurse -Force "$LIBZMQ_BUILD_DIR\lib\$Configuration"
+    if ((Test-Path "$LIBZMQ_BUILD_DIR\lib\$Configuration\zmq.lib") -and (-not ($ForceRebuild))) {
+        Write-Host 'zmq.lib already exists. Skip re-build.' -ForegroundColor Yellow
+        return
     }
     
     & 'msbuild' '/t:rebuild' '/v:minimal' "/p:Configuration=$Configuration" 'libzmq.vcxproj'
+
+    if (Test-Path "$LIBZMQ_BUILD_DIR\lib\$Configuration\zmq.lib") {
+        Remove-Item "$LIBZMQ_BUILD_DIR\lib\$Configuration\zmq.lib"
+    }
+
     Move-Item "$LIBZMQ_BUILD_DIR\lib\$Configuration\*.lib" "$LIBZMQ_BUILD_DIR\lib\$Configuration\zmq.lib"
     if ($LASTEXITCODE -ne 0) {
         throw 'MSBuild failed.'
@@ -48,7 +58,16 @@ function BuildWorkspace () {
     Write-Host "LIBZMQ_LIB_DIR = $env:LIBZMQ_LIB_DIR" -ForegroundColor Green
     Write-Host "LIBZMQ_INCLUDE_DIR = $env:LIBZMQ_INCLUDE_DIR" -ForegroundColor Green
 
-    cargo build
+    if ($ForceRebuild -eq $true) {
+        cargo clean
+    }
+
+    if ($Configuration -eq 'debug') {
+        cargo build
+    } else {
+        & 'cargo' 'build' '--release'
+    }
+
     if ($LASTEXITCODE -ne 0) {
         throw 'cargo build failed.'
     }
@@ -59,3 +78,4 @@ function BuildWorkspace () {
 Set-Location $PROJECT_ROOT
 BuildLibZmq
 BuildWorkspace
+Set-Location $PROJECT_ROOT
