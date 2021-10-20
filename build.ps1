@@ -29,10 +29,10 @@ function BuildLibZmq () {
     
     Set-Location $LIBZMQ_BUILD_DIR
     if (Test-Path "$LIBZMQ_BUILD_DIR\lib\$Configuration") {
-        Remove-Item "$LIBZMQ_BUILD_DIR\lib\$Configuration\*.lib"
+        Remove-Item -Recurse -Force "$LIBZMQ_BUILD_DIR\lib\$Configuration"
     }
     
-    & 'msbuild' '/v:minimal' "/p:Configuration=$Configuration" 'libzmq.vcxproj'
+    & 'msbuild' '/t:rebuild' '/v:minimal' "/p:Configuration=$Configuration" 'libzmq.vcxproj'
     Move-Item "$LIBZMQ_BUILD_DIR\lib\$Configuration\*.lib" "$LIBZMQ_BUILD_DIR\lib\$Configuration\zmq.lib"
     if ($LASTEXITCODE -ne 0) {
         throw 'MSBuild failed.'
