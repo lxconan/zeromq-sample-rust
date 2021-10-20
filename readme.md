@@ -6,11 +6,27 @@ You need a Windows environment (I am using Windows 10 LTSC but other versions sh
 
 All the command prompt we use is *Developer Powershell for VS2019*. You can find the shortcut under: *Start Menu* -> *Visual Studio 2019* -> *Developer Powershell for VS2019*. Because it will setup all environment variables for compilers and linkers.
 
-# 2 Build Libzmq
+# 2 One-Step Build
+
+Now we can do a one-step build using the `build.ps1` script with configuration specified. E.g.,
+
+```powershell
+PS> ./build.ps1 -Configuration Release
+```
+
+or
+
+```powershell
+PS> ./build.ps1 -Configuration Debug
+```
+
+# 3 Manually Build
+
+## 3.1 Build Libzmq
 
 Please clone the zeromq library source code from: https://github.com/zeromq/libzmq. We will use `$LIBZMQ_PROJECT$` as the root folder of the *libzmq*.
 
-## 2.1 Create MSBuild Project
+### 3.1.1 Create MSBuild Project
 
 Now let's build the project. Since I am using rust x64, we should also build the library targeting x64 platform. We will firstly use `cmake` to create a msbuild project targeting the x64 platform.
 
@@ -52,7 +68,7 @@ The generated MSBuild project will by default target against x64 platform. For e
 ...
 ```
 
-## 2.2 Build Libzmq
+### 3.1.2 Build Libzmq
 
 Now run the msbuild under the `./build` folder to create the dynamic liked library:
 
@@ -71,11 +87,11 @@ We also need the header file when we build the RUST sample.
 
 * `$LIBZMQ_PROJECT$/include`
 
-## 2.3 Rename the Linker Library
+### 3.1.3 Rename the Linker Library
 
 Please go to the `$LIBZMQ_PROJECT$/build/lib` folder. You may find the library file is named like this: `libzmq-v142-mt-4_3_5.lib`. Please rename it to `zmq.lib`.
 
-# 3 Build Rust Project
+## 3.2 Build Rust Project
 
 Now we can build our rust project. Please go to the ZeroMQ rust example. For example `rust-client`.
 
